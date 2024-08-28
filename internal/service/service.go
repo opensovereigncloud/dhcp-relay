@@ -53,6 +53,7 @@ func (svc *RelayService) Run(ctx context.Context) error {
 }
 
 func (svc *RelayService) loop(ctx context.Context) {
+	svc.log.Info("starting relay service in 5 seconds")
 	t := time.NewTicker(time.Second * 5)
 	for {
 		select {
@@ -61,6 +62,7 @@ func (svc *RelayService) loop(ctx context.Context) {
 			if err != nil {
 				svc.log.Warn(err, "failed to cleanup DHCP relay process")
 			}
+			svc.log.Info("stopped relay service")
 			return
 		case <-t.C:
 			diff, err := svc.setListenString()
@@ -69,7 +71,7 @@ func (svc *RelayService) loop(ctx context.Context) {
 				continue
 			}
 			if diff {
-				svc.cleanupDHCPRelay()
+				_ = svc.cleanupDHCPRelay()
 				continue
 			}
 			if err := svc.ensureDHCPRelay(); err != nil {
@@ -97,6 +99,7 @@ func (svc *RelayService) tryRunDHCPRelay() error {
 
 	var attrs os.ProcAttr
 	attrs.Files = []*os.File{os.Stdin, os.Stdout, os.Stderr}
+	svc.log.Debug("starting DHCP relay process", "args", strings.Join(args, " "))
 	p, err := os.StartProcess(dhcrelayBin, args, &attrs)
 	if err != nil {
 		return err

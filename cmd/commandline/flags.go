@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/opensovereigncloud/dhcp-relay/internal/log"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
@@ -14,6 +15,7 @@ type Params struct {
 	KeaEndpoint string
 	NicPrefix   string
 	PidFile     string
+	LogParams   log.Params
 }
 
 func ParseArgs() Params {
@@ -24,6 +26,8 @@ func ParseArgs() Params {
 	pflag.String("kea-endpoint", "", "Kea DHCP endpoint")
 	pflag.String("nic-prefix", "Ethernet", "NIC name prefix for filtering")
 	pflag.String("pid-file", "/tmp/dhcrelay.pid", "PID file path")
+	pflag.String("log-level", "info", "Log level. Valid values: debug, info, warn, error")
+	pflag.String("log-format", "text", "Log format. Valid values: text, json")
 
 	var help bool
 	pflag.BoolVarP(&help, "help", "h", false, "Show this help message.")
@@ -45,6 +49,10 @@ func ParseArgs() Params {
 		KeaEndpoint: viper.GetString("kea-endpoint"),
 		NicPrefix:   viper.GetString("nic-prefix"),
 		PidFile:     viper.GetString("pid-file"),
+		LogParams: log.Params{
+			Level:  viper.GetString("log-level"),
+			Format: viper.GetString("log-format"),
+		},
 	}
 }
 
