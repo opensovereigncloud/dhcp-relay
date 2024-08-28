@@ -35,7 +35,7 @@ func Setup(params Params) *Logger {
 	level := mapLogLevel(params.Level)
 	switch params.Format {
 	case "json":
-		l = setupJsonHandler(level)
+		l = setupJSONHandler(level)
 	case "text":
 		l = setupTextHandler(level)
 	default:
@@ -44,7 +44,7 @@ func Setup(params Params) *Logger {
 	return &Logger{l}
 }
 
-func setupJsonHandler(level slog.Leveler) *slog.Logger {
+func setupJSONHandler(level slog.Leveler) *slog.Logger {
 	handler := slog.NewJSONHandler(os.Stderr, &slog.HandlerOptions{
 		Level: level,
 	})
